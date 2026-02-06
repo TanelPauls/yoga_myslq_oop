@@ -2,17 +2,17 @@ const BaseSqlModel = require('./base');
 
 class AuthorModel extends BaseSqlModel {
     constructor() {
-        super('article');
+        super('author');
     }
 
-    async findAll() {
-        const articles = await super.findAll();
-        return articles
-    }
+    async findMany(author) {
+        if (!author || !author.id) {
+            throw new Error('Author object with id required');
+        }
 
-    async findOne(slug) {
-        const article = await super.findOne('slug', slug)
-        return article
+        return super.findMany({
+            author_id: author.id
+        });
     }
 }
-module.exports = ArticleModel;
+module.exports = AuthorModel;

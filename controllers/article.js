@@ -3,7 +3,7 @@ const articleModel = new articleDbModel();
 
 class articleController{
   constructor() {
-    const articles = []
+    const articles = [];
   }
 
   async getAllArticles(req, res){
