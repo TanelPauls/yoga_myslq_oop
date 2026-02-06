@@ -31,6 +31,34 @@ class articleController{
       article: {id: articleId, ...newArticle}
     })
   }
+
+  async updateArticle(req, res) {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "id param is required" });
+    }
+
+    const updateArticle = {
+      name: req.body.name,
+      slug: req.body.slug,
+      image: req.body.image,
+      body: req.body.body,
+      published: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      author_id: req.body.author_id
+    };
+
+    const updated = await articleModel.update(id, updateArticle);
+
+    if (!updated) {
+      return res.status(404).json({ message: "article not found" });
+    }
+
+    res.status(200).json({
+      message: `updated article with id ${id}`,
+      article: { id }
+    });
+  }
 }
 
 module.exports = articleController

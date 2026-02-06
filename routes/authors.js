@@ -7,6 +7,3 @@ module.exports = function (authorController) {
 
   return router;
 };
-
-
-  
