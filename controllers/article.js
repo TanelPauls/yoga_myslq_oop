@@ -59,6 +59,26 @@ class articleController{
       article: { id }
     });
   }
+
+  async deleteArticle(req, res) {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "id param is required" });
+    }
+
+    const deleted = await articleModel.delete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "article not found" });
+    }
+
+    res.status(200).json({
+      message: `deleted article with id ${id}`,
+      article: { id }
+    });
+  }
+
 }
 
 module.exports = articleController
