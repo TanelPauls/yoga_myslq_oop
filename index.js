@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session')
+const session = require('express-session');
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
@@ -14,6 +14,19 @@ app.use(session({
     cookie: {maxAge: 1000 * 60 * 60 * 24},
     resave: false
 }))
+
+const path = require ('path');
+const hbs = require('express-handlebars');
+app.set('views', path.join(__dirname, 'views'));
+app.engine('hbs', hbs.engine({
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views/layouts')
+}));
+app.set('view engine', 'hbs');
+app.use(express.static('public'));
+
+
 
 const articleControllerClass = require('./controllers/article.js');
 const articleController = new articleControllerClass();

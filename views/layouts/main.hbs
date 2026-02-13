@@ -11,7 +11,20 @@
 <body>
     <header>
         <a href="/">Yoga Blog</a>
-        <hr>
+        </br>
+        <div class="auth">
+            <a href="/" >login</a>
+            <a href="/">register</a>
+        </div>
+        <div class="auth">
+            <label for="username" class="label">Username:</label>
+            <input id="username" type="username" required class="input" />
+
+            <label for="password" class="label">Password:</label>
+            <input id="password" type="password" required class="input" />
+
+            <button type="submit" class="submitButton">Sign In</button>
+        </div>
     </header>
     {{#msg}}<div class="alert">{{.}}</div>{{/msg}}
     <main>

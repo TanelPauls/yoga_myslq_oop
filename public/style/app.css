@@ -126,3 +126,11 @@ table td, table th {
 table th {
     background-color: #eee;
 }
+
+.auth {
+    font-size: 1.25rem;
+    text-align: right;
+}
+header .auth a:hover {
+    color: blue;
+}
