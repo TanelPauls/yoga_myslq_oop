@@ -6,18 +6,14 @@ class userController {
     async register(req, res){
         try {
 
-            //console.log(req.body.username);
             const existingUser = await userModel.findByUsername(req.body.username);
-            //console.log(existingUser);
             if (existingUser) {
                 return res.status(409).json({
                     error: "Username already exists."
                 });
             }
 
-            //console.log(req.body.email);
             const existingEmail = await userModel.findByEmail(req.body.email);
-            //console.log(existingEmail);
             if (existingEmail) {
                 return res.status(409).json({
                     error: "Email already exists."
@@ -38,7 +34,6 @@ class userController {
             });
 
             const userData = await userModel.findById(registeredId);
-            console.log(userData)
 
             req.session.users = {
                 username: userData.username,
@@ -64,7 +59,52 @@ class userController {
             });
         }
     }
+    
+    async login(req, res){
+        try {
+            
+            const existingUser = await userModel.findByUsername(req.body.username);
+
+            if (!existingUser) {
+                return res.status(401).json({
+                    error: "Invalid username or password."
+                });
+            }
+
+            const storedHash = await userModel.findPasswordHashById(existingUser.id);
+
+            if (!storedHash) {
+                return res.status(401).json({
+                    error: "Invalid username or password."
+                });
+            }
+
+
+            const passwordMatch = await bcrypt.compare(
+                req.body.password,
+                storedHash
+            );
+
+            if (!passwordMatch) {
+                return res.status(401).json({
+                    error: "Invalid username or password."
+                });
+            }
+
+            return res.status(201).json({
+                message: "Logged in successfuly.",
+                user_session: existingUser
+            })
+        } catch (error) {
+            console.error(error);
+
+            return res.status(500).json({
+                error: "Internal server error."
+            });
+        }
+    }
 }
+
 
 
 module.exports = userController

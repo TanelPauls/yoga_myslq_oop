@@ -13,5 +13,9 @@ class UserModel extends BaseSqlModel {
         return await super.findOne('email', email);
     }
 
+    async findPasswordHashById(id) {
+        const result = await this.findOne('id', id);
+        return result?.password_hash;
+    }
 }
 module.exports = UserModel;

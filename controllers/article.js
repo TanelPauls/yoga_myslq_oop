@@ -62,7 +62,7 @@ class articleController{
 
   async deleteArticle(req, res) {
     const { id } = req.params;
-
+    
     if (!id) {
       return res.status(400).json({ message: "id param is required" });
     }
