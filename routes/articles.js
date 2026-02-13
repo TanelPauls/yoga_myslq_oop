@@ -9,6 +9,5 @@ module.exports = function (articleController) {
   router.patch('/article/edit/:id', (req,res) => articleController.updateArticle(req, res));
   router.delete('/article/delete/:id', (req,res) => articleController.deleteArticle(req, res));
   
-
   return router;
 };
