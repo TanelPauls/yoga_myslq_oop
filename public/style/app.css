@@ -134,3 +134,6 @@ table th {
 header .auth a:hover {
     color: blue;
 }
+.hidden {
+    display: none;
+}
