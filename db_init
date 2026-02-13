@@ -38,3 +38,20 @@ CREATE TABLE IF NOT EXISTS users (
   UNIQUE KEY uq_users_username (username),
   UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE roles (
+  id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_roles_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO roles (name) VALUES ('user'), ('admin');
+
+ALTER TABLE users
+ADD COLUMN role_id TINYINT UNSIGNED NOT NULL DEFAULT 1,
+ADD CONSTRAINT fk_users_role
+FOREIGN KEY (role_id) REFERENCES roles(id);
+
+UPDATE users SET role_id = 2 WHERE id = 5;
+
