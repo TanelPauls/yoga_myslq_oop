@@ -8,62 +8,62 @@ class userController {
         res.render('register');
     }
 
-    async register(req, res){
+    async register(req, res) {
         try {
 
-            const existingUser = await userModel.findByUsername(req.body.username);
+            const { username, email, password } = req.body;
+
+            const existingUser = await userModel.findByUsername(username);
             if (existingUser) {
-                return res.status(409).json({
-                    error: "Username already exists."
+                return res.status(409).render('register', {
+                    error: "Username already exists.",
+                    username,
+                    email
                 });
             }
 
-            const existingEmail = await userModel.findByEmail(req.body.email);
+            const existingEmail = await userModel.findByEmail(email);
             if (existingEmail) {
-                return res.status(409).json({
-                    error: "Email already exists."
-                });
-            }
-            if (!req.body.password || req.body.password.length < 6) {
-                return res.status(400).json({
-                    error: "Password must be at least 6 characters long."
+                return res.status(409).render('register', {
+                    error: "Email already exists.",
+                    username,
+                    email
                 });
             }
 
-            const cryptPassword = await bcrypt.hash(req.body.password, 10);
+            if (!password || password.length < 6) {
+                return res.status(400).render('register', {
+                    error: "Password must be at least 6 characters long.",
+                    username,
+                    email
+                });
+            }
+
+            const cryptPassword = await bcrypt.hash(password, 10);
 
             const registeredId = await userModel.create({
-                username: req.body.username,
-                email: req.body.email,
+                username,
+                email,
                 password_hash: cryptPassword
             });
 
             const userData = await userModel.findById(registeredId);
 
-            req.session.users = {
-                username: userData.username,
-                user_id: userData.id
+            req.session.user = {
+                id: userData.id,
+                username: userData.username
             };
 
-            return res.status(201).json({
-                message: "New user is registered.",
-                user_session: req.session.users
-            });
+            return res.redirect('/');
 
         } catch (err) {
-
-            if (err.code === 'ER_DUP_ENTRY') {
-                return res.status(409).json({
-                    error: "Username already exists."
-                });
-            }
-
             console.error(err);
-            return res.status(500).json({
+            return res.status(500).render('register', {
                 error: "Internal server error."
             });
         }
     }
+
     
     async login(req, res){
         try {

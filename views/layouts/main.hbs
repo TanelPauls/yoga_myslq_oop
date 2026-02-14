@@ -12,19 +12,29 @@
     <header>
         <a href="/">Yoga Blog</a>
         </br>
-        <div class="auth">
-            <a href="#" id="loginToggle">Sign In</a>
-            <a href="/users/register/">register</a>
-        </div>
-        <div class="auth hidden" id="loginForm">
-            <label for="username" class="label">Username:</label>
-            <input id="username" type="text" required class="input" />
 
-            <label for="password" class="label">Password:</label>
-            <input id="password" type="text" required class="input" />
+        {{#if user}}
+            <div style="text-align: right;">
+                Welcome {{user.username}}
+            </div>
+        {{else}}
+            <div class="auth">
+                <a href="#" id="loginToggle">Sign In</a>
+                <a href="/users/register/">register</a>
+            </div>
+            <div class="auth hidden" id="loginForm">
+                <label for="username" class="label">Username:</label>
+                <input id="username" type="text" required class="input" />
 
-            <button type="submit" class="submitButton">Sign In</button>
-        </div>
+                <label for="password" class="label">Password:</label>
+                <input id="password" type="text" required class="input" />
+
+                <button type="submit" class="submitButton">Sign In</button>
+            </div>
+        {{/if}}
+
+
+       
     </header>
     {{#msg}}<div class="alert">{{.}}</div>{{/msg}}
     <main>

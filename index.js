@@ -40,9 +40,14 @@ const articleRoutes = require('./routes/articles.js')(articleController);
 const authorRoutes = require('./routes/authors.js')(authorController);
 const userRoutes = require('./routes/users.js')(userController);
 
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+});
+
 app.use('/', articleRoutes);
 app.use('/author', authorRoutes);
-app.use('/', userRoutes);
+app.use('/users', userRoutes);
 
 app.listen(4013, "0.0.0.0", ()=>{
     console.log('App is started at http://localhost:4013')
