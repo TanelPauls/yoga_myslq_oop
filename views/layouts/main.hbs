@@ -14,8 +14,12 @@
         </br>
 
         {{#if user}}
-            <div style="text-align: right;">
-                Welcome {{user.username}}
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+                <span>Welcome {{user.username}}</span>
+
+                <form action="/users/logout" method="POST" style="margin: 0;">
+                    <button type="submit">Logout</button>
+                </form>
             </div>
         {{else}}
             <div class="auth">
