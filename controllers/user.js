@@ -65,10 +65,11 @@ class userController {
     }
 
     
-    async login(req, res){
+    async login(req, res) {
         try {
-            
-            const existingUser = await userModel.findByUsername(req.body.username);
+            const { username, password } = req.body;
+
+            const existingUser = await userModel.findByUsername(username);
 
             if (!existingUser) {
                 return res.status(401).json({
@@ -78,17 +79,7 @@ class userController {
 
             const storedHash = await userModel.findPasswordHashById(existingUser.id);
 
-            if (!storedHash) {
-                return res.status(401).json({
-                    error: "Invalid username or password."
-                });
-            }
-
-
-            const passwordMatch = await bcrypt.compare(
-                req.body.password,
-                storedHash
-            );
+            const passwordMatch = await bcrypt.compare(password, storedHash);
 
             if (!passwordMatch) {
                 return res.status(401).json({
@@ -96,18 +87,25 @@ class userController {
                 });
             }
 
-            return res.status(201).json({
-                message: "Logged in successfuly.",
-                user_session: existingUser
-            })
-        } catch (error) {
-            console.error(error);
+            req.session.user = {
+                id: existingUser.id,
+                username: existingUser.username
+            };
 
+            return res.json({
+                success: true,
+                username: existingUser.username
+            });
+
+        } catch (err) {
+            console.error(err);
             return res.status(500).json({
-                error: "Internal server error."
+                error: "Something went wrong."
             });
         }
     }
+
+
 
     async logout(req, res) {
         req.session.destroy(err => {

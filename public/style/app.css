@@ -134,6 +134,15 @@ table th {
 header .auth a:hover {
     color: blue;
 }
+.loginError {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #ffdddd;
+    color: #a00;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
 .hidden {
     display: none;
 }

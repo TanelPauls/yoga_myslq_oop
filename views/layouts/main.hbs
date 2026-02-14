@@ -26,15 +26,21 @@
                 <a href="#" id="loginToggle">Sign In</a>
                 <a href="/users/register/">register</a>
             </div>
-            <div class="auth hidden" id="loginForm">
-                <label for="username" class="label">Username:</label>
-                <input id="username" type="text" required class="input" />
+            <form class="auth hidden" id="loginForm">
 
-                <label for="password" class="label">Password:</label>
-                <input id="password" type="text" required class="input" />
+                <label>Username:</label>
+                <input name="username" type="text" required class="input" />
+
+                <label>Password:</label>
+                <input name="password" type="password" required class="input" />
 
                 <button type="submit" class="submitButton">Sign In</button>
-            </div>
+
+                <div id="loginError" class="loginError hidden"></div>
+
+            </form>
+
+
         {{/if}}
 
 
@@ -46,19 +52,79 @@
     </main>
 </body>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        const loginToggle = document.getElementById("loginToggle");
-        const loginForm = document.getElementById("loginForm");
+    const loginToggle = document.getElementById("loginToggle");
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
 
-        if (loginToggle && loginForm) {
-            loginToggle.addEventListener("click", function (event) {
-                event.preventDefault();
-                loginForm.classList.toggle("hidden");
-            });
-        }
-    });
+    if (loginToggle && loginForm) {
+        loginToggle.addEventListener("click", function (event) {
+            event.preventDefault();
+            loginForm.classList.toggle("hidden");
+        });
+    }
+
+    // FETCH LOGIN
+    if (loginForm) {
+        loginForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const username = loginForm.querySelector('[name="username"]').value;
+            const password = loginForm.querySelector('[name="password"]').value;
+
+            if (loginError) {
+                loginError.classList.add("hidden");
+                loginError.textContent = "";
+            }
+
+
+            try {
+                const response = await fetch("/users/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    loginError.textContent = data.error;
+                    loginError.classList.remove("hidden");
+                    return;
+                }
+
+                // SUCCESS → update UI dynamically
+                updateHeaderAfterLogin(data.username);
+
+            } catch (err) {
+                if (loginError) {
+                    loginError.textContent = data.error;
+                    loginError.classList.remove("hidden");
+                }
+
+            }
+        });
+    }
+
+    function updateHeaderAfterLogin(username) {
+        const authDiv = document.querySelector(".auth");
+
+        if (!authDiv) return;
+
+        authDiv.innerHTML = `
+            <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
+                <span>Welcome ${username}</span>
+                <form action="/users/logout" method="POST" style="margin:0;">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        `;
+
+        loginForm.classList.add("hidden");
+    }
+});
 </script>
-
-
 </html>
