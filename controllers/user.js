@@ -47,12 +47,14 @@ class userController {
                 password_hash: cryptPassword
             });
 
-            const userData = await userModel.findById(registeredId);
+            const userData = await userModel.findByUsernameWithRole(username);
 
             req.session.user = {
                 id: userData.id,
-                username: userData.username
+                username: userData.username,
+                role: userData.role
             };
+
 
             return res.redirect('/');
 
@@ -69,7 +71,7 @@ class userController {
         try {
             const { username, password } = req.body;
 
-            const existingUser = await userModel.findByUsername(username);
+            const existingUser = await userModel.findByUsernameWithRole(username);
 
             if (!existingUser) {
                 return res.status(401).json({
@@ -77,9 +79,10 @@ class userController {
                 });
             }
 
-            const storedHash = await userModel.findPasswordHashById(existingUser.id);
-
-            const passwordMatch = await bcrypt.compare(password, storedHash);
+            const passwordMatch = await bcrypt.compare(
+                password,
+                existingUser.password_hash
+            );
 
             if (!passwordMatch) {
                 return res.status(401).json({
@@ -89,12 +92,14 @@ class userController {
 
             req.session.user = {
                 id: existingUser.id,
-                username: existingUser.username
+                username: existingUser.username,
+                role: existingUser.role
             };
 
             return res.json({
                 success: true,
-                username: existingUser.username
+                username: existingUser.username,
+                role: existingUser.role
             });
 
         } catch (err) {
@@ -104,8 +109,6 @@ class userController {
             });
         }
     }
-
-
 
     async logout(req, res) {
         req.session.destroy(err => {

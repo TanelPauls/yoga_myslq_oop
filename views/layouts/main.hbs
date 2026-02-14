@@ -10,41 +10,34 @@
 </head>
 <body>
     <header>
-        <a href="/">Yoga Blog</a>
-        </br>
+        <div id="authContainer">
+            <a href="/">Yoga Blog</a> </br>
+            {{#if user}}
+                <div class="authBar">
+                    <span>Welcome {{user.username}} {{user.role}}</span>
+                    <form action="/users/logout" method="POST">
+                        <button type="submit">Logout</button>
+                    </form>
+                </div>
+            {{else}}
+                <div class="authLinks">
+                    <a href="#" id="loginToggle">Sign In</a>
+                    <a href="/users/register/">register</a>
+                </div>
 
-        {{#if user}}
-            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
-                <span>Welcome {{user.username}}</span>
+                <form id="loginForm" class="hidden">
+                    <label>Username:</label>
+                    <input name="username" type="text" required />
 
-                <form action="/users/logout" method="POST" style="margin: 0;">
-                    <button type="submit">Logout</button>
+                    <label>Password:</label>
+                    <input name="password" type="password" required />
+
+                    <button type="submit">Sign In</button>
+
+                    <div id="loginError" class="loginError hidden"></div>
                 </form>
-            </div>
-        {{else}}
-            <div class="auth">
-                <a href="#" id="loginToggle">Sign In</a>
-                <a href="/users/register/">register</a>
-            </div>
-            <form class="auth hidden" id="loginForm">
-
-                <label>Username:</label>
-                <input name="username" type="text" required class="input" />
-
-                <label>Password:</label>
-                <input name="password" type="password" required class="input" />
-
-                <button type="submit" class="submitButton">Sign In</button>
-
-                <div id="loginError" class="loginError hidden"></div>
-
-            </form>
-
-
-        {{/if}}
-
-
-       
+            {{/if}}
+        </div>
     </header>
     {{#msg}}<div class="alert">{{.}}</div>{{/msg}}
     <main>
@@ -54,6 +47,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+    const authContainer = document.getElementById("authContainer");
     const loginToggle = document.getElementById("loginToggle");
     const loginForm = document.getElementById("loginForm");
     const loginError = document.getElementById("loginError");
@@ -65,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // FETCH LOGIN
     if (loginForm) {
         loginForm.addEventListener("submit", async function (e) {
             e.preventDefault();
@@ -78,53 +71,47 @@ document.addEventListener("DOMContentLoaded", function () {
                 loginError.textContent = "";
             }
 
-
             try {
                 const response = await fetch("/users/login", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, password })
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
-                    loginError.textContent = data.error;
-                    loginError.classList.remove("hidden");
+                    if (loginError) {
+                        loginError.textContent = data.error;
+                        loginError.classList.remove("hidden");
+                    }
                     return;
                 }
 
-                // SUCCESS → update UI dynamically
-                updateHeaderAfterLogin(data.username);
+                updateAuthUI(data.username, data.role);
 
             } catch (err) {
                 if (loginError) {
-                    loginError.textContent = data.error;
+                    loginError.textContent = "Network error.";
                     loginError.classList.remove("hidden");
                 }
-
             }
         });
     }
 
-    function updateHeaderAfterLogin(username) {
-        const authDiv = document.querySelector(".auth");
+    function updateAuthUI(username, role) {
+        if (!authContainer) return;
 
-        if (!authDiv) return;
-
-        authDiv.innerHTML = `
-            <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
-                <span>Welcome ${username}</span>
-                <form action="/users/logout" method="POST" style="margin:0;">
+        authContainer.innerHTML = `
+            <div class="authBar">
+                <span>Welcome ${username} (${role})</span>
+                <form action="/users/logout" method="POST">
                     <button type="submit">Logout</button>
                 </form>
             </div>
         `;
-
-        loginForm.classList.add("hidden");
     }
 });
 </script>
+
 </html>

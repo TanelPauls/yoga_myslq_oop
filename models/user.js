@@ -13,9 +13,17 @@ class UserModel extends BaseSqlModel {
         return await super.findOne('email', email);
     }
 
-    async findPasswordHashById(id) {
-        const result = await this.findOne('id', id);
-        return result?.password_hash;
+    async findByUsernameWithRole(username) {
+        const query = `
+            SELECT u.id, u.username, u.email, u.password_hash, r.name AS role
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE u.username = ?
+        `;
+
+        const results = await this.executeQuery(query, [username]);
+        return results[0];
     }
+
 }
 module.exports = UserModel;
