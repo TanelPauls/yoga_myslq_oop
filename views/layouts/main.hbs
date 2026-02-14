@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                updateAuthUI(data.username, data.role);
+                window.location.reload();
 
             } catch (err) {
                 if (loginError) {
@@ -111,6 +111,36 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
     }
+
+    const deleteButtons = document.querySelectorAll(".deleteBtn");
+
+    deleteButtons.forEach(button => {
+        button.addEventListener("click", async function () {
+
+            const articleId = button.dataset.id;
+
+            if (!confirm("Are you sure you want to delete this article?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/article/delete/${articleId}`, {
+                    method: "DELETE"
+                });
+
+                if (!response.ok) {
+                    alert("Failed to delete article.");
+                    return;
+                }
+
+                // Remove article from DOM instead of redirect
+                button.closest("article").remove();
+
+            } catch (err) {
+                alert("Network error.");
+            }
+        });
+    });
 });
 </script>
 

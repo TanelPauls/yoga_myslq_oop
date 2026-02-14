@@ -65,8 +65,7 @@ class userController {
             });
         }
     }
-
-    
+   
     async login(req, res) {
         try {
             const { username, password } = req.body;
