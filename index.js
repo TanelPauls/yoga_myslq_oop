@@ -1,12 +1,11 @@
 require("dotenv").config();
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 
 const app = express();
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -45,6 +44,6 @@ app.use('/', articleRoutes);
 app.use('/author', authorRoutes);
 app.use('/', userRoutes);
 
-app.listen(4013, ()=>{
+app.listen(4013, "0.0.0.0", ()=>{
     console.log('App is started at http://localhost:4013')
 })

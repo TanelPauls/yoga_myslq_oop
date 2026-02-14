@@ -3,6 +3,11 @@ const userDbModel = require('../models/user.js');
 const userModel = new userDbModel();
 
 class userController {
+
+    async registerPage(req, res){
+        res.render('register');
+    }
+
     async register(req, res){
         try {
 
