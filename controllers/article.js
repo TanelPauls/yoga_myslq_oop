@@ -16,20 +16,28 @@ class articleController{
     res.render('article', { article });
   }
 
+  async createNewArticlePage(req, res){
+    res.render('postArticle');
+  }
+
   async createNewArticle(req,res) {
-    const newArticle = {
-      name: req.body.name,
-      slug: req.body.slug,
-      image: req.body.image,
-      body: req.body.body,
-      published: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      author_id: req.body.author_id
+    try {
+      const newArticle = {
+        name: req.body.name,
+        slug: req.body.slug,slug: req.body.slug
+          .toLowerCase()
+          .replace(/[^a-z0-9-]/g, '-'),
+        image: req.body.image,
+        body: req.body.body,
+        published: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        author_id: req.body.author_id
+      }
+      const articleId = await articleModel.create(newArticle)
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "internal server error" });
     }
-    const articleId = await articleModel.create(newArticle)
-    res.status(201).json({
-      message: `created article with id ${articleId}`,
-      article: {id: articleId, ...newArticle}
-    })
   }
 
   async updateArticle(req, res) {
