@@ -1,6 +1,9 @@
 const articleDbModel = require('../models/article.js');
 const articleModel = new articleDbModel();
 
+const authorDbModel = require('../models/author.js');
+const authorModel = new authorDbModel();
+
 class articleController{
   constructor() {
     const articles = [];
@@ -17,7 +20,17 @@ class articleController{
   }
 
   async createNewArticlePage(req, res){
-    res.render('postArticle');
+    try {
+      const authors = await authorModel.findAll();
+
+      res.render('postArticle', { authors });
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).render('postArticle', {
+        error: "Failed to load authors"
+      });
+    }
   }
 
   async createNewArticle(req,res) {

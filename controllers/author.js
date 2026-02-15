@@ -15,6 +15,11 @@ class authorController {
         author['articles'] = articles;
         res.status(201).json({author: author})
     }
+
+    async getAllAuthors(req, res){
+        const authors = await authorModel.findAll();
+        res.status(201).json({authors});
+    }
 }
 
 module.exports = authorController
