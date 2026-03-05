@@ -1,6 +1,10 @@
+sudo apt install mysql-server
+
 CREATE DATABASE joga_mysql_oop
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
+
+use joga_mysql_oop;
 
 CREATE TABLE IF NOT EXISTS article (
   `id` int NOT NULL AUTO_INCREMENT,
